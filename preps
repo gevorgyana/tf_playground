@@ -1,0 +1,21 @@
+#!/bin/bash
+
+function start() {
+    curl -O https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz
+    tar -xf aclImdb_v1.tar.gz
+}
+
+function clean() {
+    rm -rf ./aclImdb
+    rm -f ./aclImdb_v1.tar.gz
+}
+
+if [ "$1" == "start" ]
+then
+    echo "Downloading the dataset."
+    start
+elif [ "$1" == "clean" ]
+then
+    echo "Removing the dataset."
+    clean
+fi
