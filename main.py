@@ -28,3 +28,8 @@ print(
     "number of batches in raw_train_ds: %d"
     % tf.data.experimental.cardinality(raw_train_ds)
 )
+
+print(
+    "Number of batches in raw_test_ds: %d"
+    % tf.data.experimental.cardinality()
+)
