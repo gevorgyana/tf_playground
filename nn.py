@@ -1,5 +1,20 @@
 import numpy as np
 import matplotlib.pyplot as plt
-# do not use librosa, use `wave` from standard library
-# download a sound and see what it looks like
-# sound, sr = librosa.load('1-100032-A-0.wav')
+import scipy.io.wavfile
+
+# get the WAVs
+import os
+from os.path import isfile, join
+wavs = [wav for wav in os.listdir('.')
+        if isfile(join('./', wav)) & join('./', wav).endswith('wav')]
+print(wavs)
+
+for wav in wavs:
+    sampling_freq, data = scipy.io.wavfile.read(wav)
+    print("the wave")
+    print(data)
+    print("samplig frequency")
+    print(sampling_freq)
+    os.system('aplay %s' % wav)
+    plt.specgram(data)
+    plt.show()
