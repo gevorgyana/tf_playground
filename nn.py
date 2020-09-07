@@ -7,3 +7,8 @@ if len(sound[0].shape) == 1:
     print('Mono')
 else:
     print('Stereo')
+
+# experiment with all the different ways to visualize sound with plots
+# in frequency/time domain, + spectrograms
+
+# use spectrogram to do ml on it
