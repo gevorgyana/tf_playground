@@ -1,14 +1,24 @@
 import numpy as np
 import librosa
+import librosa.display
 # download a sound and see what it looks like
-sound = librosa.load('1-100032-A-0.wav')
+sound, sr = librosa.load(librosa.util.example_audio_file())
 
-if len(sound[0].shape) == 1:
+
+#                         '1-100032-A-0.wav')
+
+if len(sound) == 1:
     print('Mono')
 else:
     print('Stereo')
 
-# experiment with all the different ways to visualize sound with plots
-# in frequency/time domain, + spectrograms
+## new block
 
-# use spectrogram to do ml on it
+import matplotlib.pyplot as plt
+
+plt.figure(figsize = (12, 8))
+
+D = librosa.amplitude_to_db(librosa.stft(sound), ref = np.max)
+plt.subplot(4, 2, 1)
+librosa.display.specshow(D, y_axis = 'linear')
+plt.show()
