@@ -36,5 +36,6 @@ for i in [j for j in os.listdir() if j.endswith('wav')]:
         librosa.display.specshow(stft)
         plt.show()
 
+    print("Todo use MFCC, but spectrograms are enough")
 
     break
