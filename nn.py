@@ -10,11 +10,10 @@ wavs = [wav for wav in os.listdir('.')
 print(wavs)
 
 for wav in wavs:
-    sampling_freq, data = scipy.io.wavfile.read(wav)
-    print("the wave")
-    print(data)
-    print("samplig frequency")
-    print(sampling_freq)
+    sampling_freq, data_orig = scipy.io.wavfile.read(wav)
+
     os.system('aplay %s' % wav)
-    plt.specgram(data)
+    plt.specgram(data_orig)
     plt.show()
+
+# todo mfc transform + conv net in Keras
