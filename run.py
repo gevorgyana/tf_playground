@@ -9,9 +9,12 @@ import librosa
 print("For plotting, we need - matplotlib\n - a wrapper from librosa")
 import matplotlib.pyplot as plt
 import librosa.display
+import numpy as np
 
-DISPLAY_PLOT_WAVE = True
-DISPLAY_PLOT_STFT = True
+DISPLAY_PLOT_WAVE = False
+DISPLAY_PLOT_STFT = False
+DISPLAY_WITH_MANUALLY_CHANGED_SCALE = False
+POWER_TO_DB = True
 
 # for all the good files
 for i in [j for j in os.listdir() if j.endswith('wav')]:
@@ -30,12 +33,47 @@ for i in [j for j in os.listdir() if j.endswith('wav')]:
         librosa.display.waveplot(wav_i)
         plt.show()
 
-    stft = librosa.stft(wav_i)
+    # hop length = 512 TODO should be!
+    # https://dsp.stackexchange.com/questions/248/how-do-i-optimize-the-window-lengths-in-stft, also may need the default value too
+    stft = librosa.stft(wav_i, hop_length = 512)
 
     if DISPLAY_PLOT_STFT == True:
         librosa.display.specshow(stft)
         plt.show()
 
-    print("Todo use MFCC, but spectrograms are enough")
+    print("- What happens if we take the absolute values?")
+    stft = np.abs(stft)
+    if DISPLAY_PLOT_STFT == True:
+        librosa.display.specshow(stft)
+        plt.title("Now showing the absolute values")
+        plt.show()
+    print("- stft is now np.abs(stft)")
+
+    print("- Manually change the y-scale to Decebel scale")
+    stft_log = librosa.amplitude_to_db(stft, ref = np.max)
+
+    if DISPLAY_WITH_MANUALLY_CHANGED_SCALE == True:
+        librosa.display.specshow(stft_log, sr=sr,
+                                 x_axis = 'time', y_axis = 'log')
+        plt.show()
+
+    # Seems like the previous image is an MFCC, and there are many ways
+    # to create one in librosa, but I will use the funcition that is
+    # specifically tailored for that
+
+    print("Calculate the MFCC")
+    # - As suggested by docs, TODO tweak `fmax` - it may be necessary to
+    # remove all of the zero-ed out freqeuncies at the top of MFCC.
+    # - Use this method, not custom-made conversions!!!!!
+
+    S = librosa.feature.melspectrogram(wav_i, sr)
+    # The example in the docs runs this too, but IDK if that is needed.
+
+    if POWER_TO_DB == True:
+        S = librosa.power_to_db(S, ref = np.max)
+    librosa.display.specshow(S, x_axis = 'time', y_axis = 'mel',
+                             sr = sr, fmax = 8000)
+    plt.show()
+    print("Successful")
 
     break
