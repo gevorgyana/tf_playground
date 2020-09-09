@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 import os
 
+'''
+TODO 1 spectrogram is NOT ENOUGH! Or mfcc. Doesn't matter. Need more.
+'''
+
 print("First of all, we need to extract features from wav-files\n"
       "We will use librosa - a Python lib for audio processing")
 
