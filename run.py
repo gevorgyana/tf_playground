@@ -14,6 +14,8 @@ import numpy as np
 DISPLAY_PLOT_WAVE = False
 DISPLAY_PLOT_STFT = False
 DISPLAY_WITH_MANUALLY_CHANGED_SCALE = False
+
+# should always be True for the scirpt to work
 POWER_TO_DB = True
 
 # for all the good files
@@ -69,11 +71,18 @@ for i in [j for j in os.listdir() if j.endswith('wav')]:
     S = librosa.feature.melspectrogram(wav_i, sr)
     # The example in the docs runs this too, but IDK if that is needed.
 
+
+    # Disapling this will lead to a bad output - so we need this thing
+    # to get a prper MFCC
     if POWER_TO_DB == True:
         S = librosa.power_to_db(S, ref = np.max)
     librosa.display.specshow(S, x_axis = 'time', y_axis = 'mel',
                              sr = sr, fmax = 8000)
     plt.show()
     print("Successful")
-
     break
+
+print("\n --- \n")
+print("Preparing the dataset : building a native Python dictionary")
+
+train_data = {}
