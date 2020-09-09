@@ -1,7 +1,9 @@
+---
 Done:
 show spectrograms
 
 Todo:
+
 prepare the whole dataset into a stadard form, insipired by this video:
 https://www.youtube.com/watch?v=szyGiObZymo
 

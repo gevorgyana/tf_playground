@@ -23,9 +23,10 @@ print
     "dataset"
 )
 
-# Returns the dictionary mapping each number into its corresponding MFCC
+# Returns the dictionary mapping each number into its corresponding MFCCs
 def prepare_mfccs():
     id2mfcc = {}
+
     for dirpath, dirnames, filenames in os.walk("kaggle_ds"):
         if dirpath == '.':
             continue
@@ -39,6 +40,7 @@ def prepare_mfccs():
             if f.endswith('wav'):
                 counter += 1
                 waveform, sr = librosa.load("./{}/{}".format(dirpath, f))
+
                 '''
                 id2mfcc[f] = librosa.power_to_db (
                     librosa.feature.melspectrogram(waveform, sr = sr),
@@ -53,6 +55,22 @@ def prepare_mfccs():
                 # [#] https://www.youtube.com/watch?v=szyGiObZymo
 
                 id2mfcc[f] = librosa.feature.mfcc(waveform, sr = sr)
+
+                '''
+                for segment_th in range(num_segments):
+                    start_sample = num_samples_per_segment * segment_th
+                    finish_smaple = start_sample + num_samples_per_segment
+                    mfcc = librosa.feature.mfcc(
+                        waveform[start_sample:finish_smaple],
+                        sr = sr,
+
+                        # customize the form of MFCCs:
+                        # n_fft = 2048,
+                        # n_mfcc = 13,
+                        # hop_length = 512,
+
+                    )
+                '''
 
     return id2mfcc
 
