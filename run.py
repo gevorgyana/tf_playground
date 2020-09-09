@@ -3,6 +3,20 @@ import os
 
 '''
 TODO 1 spectrogram is NOT ENOUGH! Or mfcc. Doesn't matter. Need more.
+
+The records are 5 secs long.
+Samples at 16kHZ.
+If I want to have 30 sliding windows, with half-overlap, then I need
+
+16kHZ / 6 = 2.6k samples per record.
+Suppose I want 30 sliding windows.
+From them, only 2 edge windows will 'own' their data, which is 1 window
+total.
+So each window is 2.6 / 30 = 0.86 k.
+And hop is 0.86 / 2 = 0.43k = 430
+Almost near 512, but better to have 512 as hop length, as it is the
+default value.
+
 '''
 
 print("First of all, we need to extract features from wav-files\n"
