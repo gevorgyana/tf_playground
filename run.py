@@ -75,7 +75,8 @@ def extract_mfccs_from_track(sound, sr):
         print("Have {} frames inside of this segment, all of them must\n"
               "be seen on the plot", len(mfcc))
 
-        mfccs.append(mfcc)
+        # tolist() so that we can store this in JSON
+        mfccs.append(mfcc.tolist())
 
     return mfccs
 
@@ -130,6 +131,10 @@ def prepare_data(root, path_to_csv):
 
     return data
 
+# store the data
+import json
 data = prepare_data('.', 'kaggle_ds/esc50.csv')
+with open('data.json', 'w') as out:
+    json.dump(data, out)
 
 print(data)
