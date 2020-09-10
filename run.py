@@ -183,4 +183,56 @@ with open('data.json', 'r') as data:
         lambda x: one_hots[label2code[x]],
         y
     )))
+
+    # TODO: refactor - remove the excessive dimension that comes from
+    # segmenting the tracks - there is no need to split a 5second sound!
+    # For now just reshape this array, but fix later.
+    X = np.reshape(X,
+        (X.shape[0],
+         X.shape[2],
+         X.shape[3]
+        )
+    )
+
+    print(X.shape)
+    print(y.shape)
     print(y)
+
+    # Split the data into test and train sets
+    X_train, y_train, X_test, y_test = train_test_split(X, y,
+                                                        test_size = 0.3)
+
+    print('after the split')
+    print(X_train.shape)
+    print(y_train.shape)
+    print(X_test.shape)
+    print(y_test.shape)
+
+    # A very simple network just to see it running, which will already be
+    # a huge milestone for me.
+    model = keras.Sequential([
+
+        # input layer
+        keras.layers.Flatten(
+            input_shape = (X.shape[1], X.shape[2])
+        ),
+
+        keras.layers.Dense(len(vis),
+                           activation = 'softmax'
+        )
+    ])
+
+    model.summary()
+
+    optimizer = keras.optimizers.Adam(learning_rate = 0.0001)
+
+    model.compile(optimizer,
+                  loss = 'sparse_categorical_corssentropy',
+                  metrics = ['accuracy']
+    )
+
+    model.fit(
+        X_train, y_train, validation_data = (X_test, y_test),
+        epochs = 50,
+        batch_size = 32
+    )
