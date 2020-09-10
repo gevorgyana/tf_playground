@@ -1,10 +1,15 @@
+Heavily inspired by this incredible YouTube channel.
+https://www.youtube.com/channel/UCZPFjMe1uRSirmSpznqvJfQ
+
 Done:
-show spectrograms
+- show spectrograms
+- prepare the whole dataset into a stadard form, insipired by this video:
+https://www.youtube.com/watch?v=szyGiObZymo
+- simple network that successfully compiles
 
 Todo:
-
-prepare the whole dataset into a stadard form, insipired by this video:
-https://www.youtube.com/watch?v=szyGiObZymo
+- Fight overfitting
+- Use LSTMs
 
 --- [quote]
 
