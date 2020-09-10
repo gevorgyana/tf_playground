@@ -15,6 +15,12 @@ def load_sound(filename):
     assert sr == SAMPLE_RATE
     return sound, sr
 
+# EXPERIMENT LATER: For now, we have 1 sec of sample, but it makes no
+# sense to do this, because the sounds usually take up to 3 seconds
+# approximately. In the reference project on speech recognition, they were
+# using the dataset that had 1 sec words in each track.
+# TODO: Completely remove segmenting!!! It is useless here.
+
 # Calculate the MFCCs over the segments, a.k.a. frames. Prepare the
 # parameters for calculating the MFCCs over the segments. In the video,
 # 10 frames per 30 sec was used, I have 5 sec, but let me use 5 frames.
@@ -46,23 +52,25 @@ def extract_mfccs_from_track(sound, sr):
             n_mfcc = 13,
 
             # these are somewhat magic constants; IDK what they mean.
-            # It seems redundant to me.
+            # It seems redundant to me. TODO: check the Slack channel,
+            # in case they anser.
             n_fft = 2048,
             hop_length = 512,
-        )
+        ).T # transposed!
 
         num_mfcc_vectors_per_segment = math.ceil(
             frame_length_in_samples / 512
         )
 
-        print("{}vs{}".format(len(mfcc), num_mfcc_vectors_per_segment))
         # should always be the same, but in the video we
         # check if the length is not equal to expected length.
+        # this is the number of frames that we obtained in one segment
+        assert len(mfcc) == num_mfcc_vectors_per_segment
 
         # librosa.display.specshow(mfcc)
         # plt.show()
 
-        mfccs.append(mfcc.T)
+        mfccs.append(mfcc)
 
     return mfccs
 
