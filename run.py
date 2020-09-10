@@ -220,15 +220,23 @@ with open('data.json', 'r') as data:
     print(X_test.shape)
     print(y_test.shape)
 
-    # A very simple network just to see it running, which will already be
-    # a huge milestone for me.
     model = keras.Sequential([
 
-        # input layer
-        keras.layers.Flatten(
-            input_shape = (X.shape[1], X.shape[2])
+        # input with LSTM
+        keras.layers.LSTM(
+            64,
+            input_shape = (X.shape[1], X.shape[2]),
+            return_sequences = True
         ),
 
+        # 1 more LSTM, as in the video
+        keras.layers.LSTM(64),
+
+        # dense layer
+        keras.layers.Dense(64, activation = 'relu'),
+        keras.layers.Dropout(0.3),
+
+        # output
         keras.layers.Dense(len(vis),
                            activation = 'softmax'
         )
