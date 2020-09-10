@@ -21,12 +21,7 @@ def load_sound(filename):
 # using the dataset that had 1 sec words in each track.
 # TODO: Completely remove segmenting!!! It is useless here.
 
-# Calculate the MFCCs over the segments, a.k.a. frames. Prepare the
-# parameters for calculating the MFCCs over the segments. In the video,
-# 10 frames per 30 sec was used, I have 5 sec, but let me use 5 frames.
-NUM_FRAMES = 3
-# 5 / 5 = 1 seconds per frame;
-# 22050 samples per frame.
+NUM_FRAMES = 2
 frame_length_in_samples = int(SAMPLE_RATE / NUM_FRAMES)
 print(frame_length_in_samples)
 
@@ -84,6 +79,8 @@ def extract_mfccs_from_track(sound, sr):
 
     return mfccs
 
+DATA_NEEDED_CNT = 10
+
 def prepare_data(root, path_to_csv):
 
     data = {
@@ -95,16 +92,16 @@ def prepare_data(root, path_to_csv):
         "name": []
     }
 
+    entries_counter = 0
+
     # map filename to mfccs, and label
     for i, (path, dirnames, filenames) in enumerate(os.walk(root)):
-        # collect mfccs
-        if path == '.':
+        if not path.endswith('audio'):
             continue
         for f in filenames:
             if not f.endswith('wav'):
                 continue
-            filename = f.split(".")[0]
-            print(f"{filename}")
+            print("file name: {}", f.split(".")[0])
             # find the label of the record
             with open(path_to_csv, 'r') as meta_data:
                 for s in meta_data:
@@ -120,8 +117,19 @@ def prepare_data(root, path_to_csv):
             sound, sr = load_sound(f"{path}/{f}")
             mfccs = extract_mfccs_from_track(sound, sr)
 
-            print("hm segments we have in this mfcc {}", len(mfccs))
+            print("- hm segments we have in this mfcc {}", len(mfccs))
 
-            break
+            data["name"].append(f)
+            data["label"].append(label)
+            data["mfcc"].append(mfccs)
 
-prepare_data('.', 'kaggle_ds/esc50.csv')
+            entries_counter += 1
+
+            if entries_counter == DATA_NEEDED_CNT:
+                break
+
+    return data
+
+data = prepare_data('.', 'kaggle_ds/esc50.csv')
+
+print(data)
