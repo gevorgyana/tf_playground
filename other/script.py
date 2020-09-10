@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 
 SAMPLE_RATE = 22050
 
-def load_sound(filename = '1-110389-A-0.wav'):
+def load_sound(filename):
     # load the sound at the default sample rate 22050 HZ
     sound, sr = librosa.load(
-        '1-110389-A-0.wav'
+        filename
     )
     assert sr == SAMPLE_RATE
     return sound, sr

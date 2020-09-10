@@ -1,13 +1,16 @@
+#!/usr/bin/env python
+
 import librosa, librosa.display
 import math
+import os
 import matplotlib.pyplot as plt
 
 SAMPLE_RATE = 22050
 
-def load_sound(filename = '1-110389-A-0.wav'):
+def load_sound(filename):
     # load the sound at the default sample rate 22050 HZ
     sound, sr = librosa.load(
-        '1-110389-A-0.wav'
+        filename
     )
     assert sr == SAMPLE_RATE
     return sound, sr
@@ -22,6 +25,8 @@ frame_length_in_samples = int(SAMPLE_RATE / NUM_FRAMES)
 print(frame_length_in_samples)
 
 def extract_mfccs_from_track(sound, sr):
+    mfccs = []
+
     # calculate the MFCCs over the frames
     for i in range(NUM_FRAMES):
         start_sample = i * frame_length_in_samples
@@ -40,8 +45,8 @@ def extract_mfccs_from_track(sound, sr):
             # the minimum value
             n_mfcc = 13,
 
-            # these are somewhat magic constants; IDK what they mean. It seems
-            # redundant to me.
+            # these are somewhat magic constants; IDK what they mean.
+            # It seems redundant to me.
             n_fft = 2048,
             hop_length = 512,
         )
@@ -57,7 +62,12 @@ def extract_mfccs_from_track(sound, sr):
         # librosa.display.specshow(mfcc)
         # plt.show()
 
-def prepare_data(root):
+        mfccs.append(mfcc.T)
+
+    return mfccs
+
+def prepare_data(root, path_to_csv):
+
     data = {
         # a range of mfccs that represent the sound
         "mfcc": [],
@@ -66,3 +76,34 @@ def prepare_data(root):
         # filenames
         "name": []
     }
+
+    # map filename to mfccs, and label
+    for i, (path, dirnames, filenames) in enumerate(os.walk(root)):
+        # collect mfccs
+        if path == '.':
+            continue
+        for f in filenames:
+            if not f.endswith('wav'):
+                continue
+            filename = f.split(".")[0]
+            print(f"{filename}")
+            # find the label of the record
+            with open(path_to_csv, 'r') as meta_data:
+                for s in meta_data:
+                    splits = s.split(',')
+                    if splits[0] == f:
+                        label = splits[3]
+                        break
+            print(label)
+
+            print(f"{path}/{f}")
+
+            # calculate mfccs for this file
+            sound, sr = load_sound(f"{path}/{f}")
+            mfccs = extract_mfccs_from_track(sound, sr)
+
+            print("hm frames we have in this mfcc {}", len(mfccs))
+
+            break
+
+prepare_data('.', 'kaggle_ds/esc50.csv')
