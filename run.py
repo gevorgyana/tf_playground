@@ -323,13 +323,51 @@ def examine(filename):
 examine(first)
 examine(second)
 '''
+
+# rescale data
 with open('data.json') as f:
     data = json.load(f)
     # max and min values from the whole range
+    min_ = np.min(data['mfcc'])
+    max_ = np.max(data['mfcc'])
+
+    rescaled_mfcc = data['mfcc']
+    for i in rescaled_mfcc:
+        i = np.array(i)
+
+        i = np.reshape(
+            i,
+            (i.shape[2],
+             i.shape[1]
+            )
+        )
+
+        proper_shape = i.shape
+
+        i = np.reshape(
+            i,
+            np.prod(i.shape)
+        )
+
+
+
+        i = np.array([(item - min_) / (max_ - min_) for item in i])
+        for j in i:
+            print(j)
+
+        i = np.reshape(
+            i,
+            proper_shape
+        )
+
+        print(i.shape)
+        print("-----")
+
+    # max and min values from the whole range
     print(
-        np.max(data['mfcc'])
+        np.max(rescaled_mfcc)
     )
 
     print(
-        np.min(data['mfcc'])
+        np.min(rescaled_mfcc)
     )
