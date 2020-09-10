@@ -24,7 +24,7 @@ def load_sound(filename):
 # Calculate the MFCCs over the segments, a.k.a. frames. Prepare the
 # parameters for calculating the MFCCs over the segments. In the video,
 # 10 frames per 30 sec was used, I have 5 sec, but let me use 5 frames.
-NUM_FRAMES = 10
+NUM_FRAMES = 3
 # 5 / 5 = 1 seconds per frame;
 # 22050 samples per frame.
 frame_length_in_samples = int(SAMPLE_RATE / NUM_FRAMES)
@@ -56,19 +56,29 @@ def extract_mfccs_from_track(sound, sr):
             # in case they anser.
             n_fft = 2048,
             hop_length = 512,
-        ).T # transposed!
+        )
+
+        assert 13 == len(mfcc)
+        print("hm frames in this sample {}",
+              frame_length_in_samples / 512
+        )
 
         num_mfcc_vectors_per_segment = math.ceil(
             frame_length_in_samples / 512
         )
+
+        # librosa.display.specshow(mfcc)
+        # plt.show()
+
+        mfcc = mfcc.T
 
         # should always be the same, but in the video we
         # check if the length is not equal to expected length.
         # this is the number of frames that we obtained in one segment
         assert len(mfcc) == num_mfcc_vectors_per_segment
 
-        # librosa.display.specshow(mfcc)
-        # plt.show()
+        print("Have {} frames inside of this segment, all of them must\n"
+              "be seen on the plot", len(mfcc))
 
         mfccs.append(mfcc)
 
@@ -110,7 +120,7 @@ def prepare_data(root, path_to_csv):
             sound, sr = load_sound(f"{path}/{f}")
             mfccs = extract_mfccs_from_track(sound, sr)
 
-            print("hm frames we have in this mfcc {}", len(mfccs))
+            print("hm segments we have in this mfcc {}", len(mfccs))
 
             break
 
