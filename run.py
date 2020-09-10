@@ -131,10 +131,60 @@ def prepare_data(root, path_to_csv):
 
     return data
 
-# store the data
 import json
+import numpy as np
+from sklearn.model_selection import train_test_split
+import tensorflow.keras as keras
+
+# store the data in a file
+'''
 data = prepare_data('.', 'kaggle_ds/esc50.csv')
 with open('data.json', 'w') as out:
     json.dump(data, out)
+'''
 
-print(data)
+# now read the data
+with open('data.json', 'r') as data:
+    data_json = json.load(data)
+
+    X = np.array(
+        data_json['mfcc']
+    )
+
+    print(X.shape)
+
+    y = np.array(data_json['label'])
+
+    X = np.reshape(X, (X.shape[0],
+                       X.shape[2],
+                       X.shape[3]
+    ))
+
+    # print(type(targets))
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size = 0.3
+    )
+
+    model = keras.Sequential([
+        keras.layers.Flatten(input_shape=(X.shape[1], X.shape[2])),
+
+        keras.layers.Dense(512, activation = 'relu'),
+        keras.layers.Dense(256, activation = 'relu'),
+        keras.layers.Dense(50, activation = 'relu')
+
+    ])
+
+    optimizer = keras.optimizers.Adam(learning_rate = 0.0001)
+    model.compile(
+        optimizer = optimizer,
+        loss = 'sparse_categorical_crossentropy',
+        metrics = ['accuracy']
+    )
+
+    model.summary()
+
+    history = model.fit(
+        X_train, y_train, validation_data = (X_test, y_test),
+        batch_size = 32, epochs = 50
+    )
