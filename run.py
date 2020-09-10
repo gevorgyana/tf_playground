@@ -80,7 +80,7 @@ def extract_mfccs_from_track(sound, sr):
 
     return mfccs
 
-DATA_NEEDED_CNT = 10
+DATA_NEEDED_CNT = 3000
 
 def prepare_data(root, path_to_csv):
 
@@ -136,12 +136,30 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 import tensorflow.keras as keras
 
-# store the data in a file
+# store the data in a file - UNCOMMENT WHEN RUNNING FOR THE FIRST TIME
+
 '''
 data = prepare_data('.', 'kaggle_ds/esc50.csv')
+print("data prepared")
 with open('data.json', 'w') as out:
     json.dump(data, out)
 '''
+
+def plot_training_results(history):
+    fig, axs = plt.subplots(2)
+    axs[0].plot(history.history['accuracy'], label = 'train accuracy')
+    axs[0].plot(history.history['val_accuracy'], label = 'test accuracy')
+    axs[0].set_ylabel('Accuracy')
+    axs[0].legend(loc = 'lower right')
+    axs[0].set_title('Accuracy eval')
+
+    axs[1].plot(history.history['loss'], label = 'train error')
+    axs[1].plot(history.history['val_loss'], label = 'test error')
+    axs[1].set_ylabel('Error')
+    axs[1].legend(loc = 'lower right')
+    axs[1].set_title('Error eval')
+
+    plt.show()
 
 # now read the data
 with open('data.json', 'r') as data:
@@ -194,17 +212,6 @@ with open('data.json', 'r') as data:
         )
     )
 
-    '''
-    y = np.reshape(y,
-        (
-            y.shape[0]
-            ,
-            y.shape[1],
-            1
-        )
-    )
-    '''
-
     # Split the data into test and train sets
     X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                         test_size = 0.3)
@@ -243,7 +250,7 @@ with open('data.json', 'r') as data:
     print(y_train)
     print(y_test)
 
-    model.fit(
+    history = model.fit(
         X_train, y_train, validation_data = (X_test, y_test),
         epochs = 50,
 
@@ -254,3 +261,5 @@ with open('data.json', 'r') as data:
         # because their dataset was already huge.
         batch_size = 1
     )
+
+    plot_training_results(history)
