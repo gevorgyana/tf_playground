@@ -21,7 +21,7 @@ def load_sound(filename):
 # using the dataset that had 1 sec words in each track.
 # TODO: Completely remove segmenting!!! It is useless here.
 
-NUM_FRAMES = 2
+NUM_FRAMES = 1
 frame_length_in_samples = int(SAMPLE_RATE / NUM_FRAMES)
 print(frame_length_in_samples)
 
