@@ -298,3 +298,26 @@ with open('data.json') as f:
         )
         plt.show()
 '''
+
+# trying to come up with new more informative features
+first = 'kaggle_ds/audio/audio/1-100032-A-0.wav'
+second = 'kaggle_ds/audio/audio/1-100038-A-14.wav'
+
+def examine(filename):
+    sound, sr = librosa.load(filename, SAMPLE_RATE)
+    assert sr == SAMPLE_RATE
+
+    os.system('aplay {}'.format(filename))
+
+    mfcc = librosa.feature.mfcc(
+        sound, sr
+    )
+
+    librosa.display.specshow(
+        mfcc
+    )
+
+    plt.show()
+
+examine(first)
+examine(second)
