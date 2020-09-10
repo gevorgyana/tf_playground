@@ -300,6 +300,7 @@ with open('data.json') as f:
 '''
 
 # trying to come up with new more informative features
+'''
 first = 'kaggle_ds/audio/audio/1-100032-A-0.wav'
 second = 'kaggle_ds/audio/audio/1-100038-A-14.wav'
 
@@ -321,3 +322,14 @@ def examine(filename):
 
 examine(first)
 examine(second)
+'''
+with open('data.json') as f:
+    data = json.load(f)
+    # max and min values from the whole range
+    print(
+        np.max(data['mfcc'])
+    )
+
+    print(
+        np.min(data['mfcc'])
+    )
