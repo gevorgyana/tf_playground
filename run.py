@@ -199,7 +199,7 @@ with open('data.json', 'r') as data:
     print(y)
 
     # Split the data into test and train sets
-    X_train, y_train, X_test, y_test = train_test_split(X, y,
+    X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                         test_size = 0.3)
 
     print('after the split')
@@ -227,7 +227,7 @@ with open('data.json', 'r') as data:
     optimizer = keras.optimizers.Adam(learning_rate = 0.0001)
 
     model.compile(optimizer,
-                  loss = 'sparse_categorical_corssentropy',
+                  loss = 'sparse_categorical_crossentropy',
                   metrics = ['accuracy']
     )
 
