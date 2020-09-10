@@ -1,24 +1,6 @@
 #!/usr/bin/env python
 import os
 
-'''
-TODO 1 spectrogram is NOT ENOUGH! Or mfcc. Doesn't matter. Need more.
-
-The records are 5 secs long.
-Samples at 16kHZ.
-If I want to have 30 sliding windows, with half-overlap, then I need
-
-16kHZ / 6 = 2.6k samples per record.
-Suppose I want 30 sliding windows.
-From them, only 2 edge windows will 'own' their data, which is 1 window
-total.
-So each window is 2.6 / 30 = 0.86 k.
-And hop is 0.86 / 2 = 0.43k = 430
-Almost near 512, but better to have 512 as hop length, as it is the
-default value.
-
-'''
-
 print("First of all, we need to extract features from wav-files\n"
       "We will use librosa - a Python lib for audio processing")
 
@@ -37,9 +19,23 @@ print
     "dataset"
 )
 
+SAMPLE_RATE = 16000 # hm samples per second
+DURATION = 5 # seconds
+SAMPLES_PER_TRACK = SAMPLE_RATE * DURATION
+
 # Returns the dictionary mapping each number into its corresponding MFCCs
 def prepare_mfccs():
     id2mfcc = {}
+
+    num_samples_per_segment = int(
+        SAMPLES_PER_TRACK / num_segments
+    )
+
+    expected_num_mfcc_vectors_per_segment = math.ceil(
+        num_samples_per_segment / 512 # 512 is the hop_length
+        # there are hop_length units inside the segment, which are
+        # used for calculating MFCC
+    )
 
     for dirpath, dirnames, filenames in os.walk("kaggle_ds"):
         if dirpath == '.':
@@ -54,37 +50,34 @@ def prepare_mfccs():
             if f.endswith('wav'):
                 counter += 1
                 waveform, sr = librosa.load("./{}/{}".format(dirpath, f))
-
-                '''
+                ''' this is the old way of doing it - calculating Mel
+                    spectrogram instead of using MFCCs.
                 id2mfcc[f] = librosa.power_to_db (
                     librosa.feature.melspectrogram(waveform, sr = sr),
                     ref = np.max
                 )
                 '''
-
                 # See the docs for this function, it is customizable, but
                 # I am using defaults. There is a difference between
                 # mfcc and melspectrogram, but he chooses to use
                 # the former ¯\_(ツ)_/¯
                 # [#] https://www.youtube.com/watch?v=szyGiObZymo
-
-                id2mfcc[f] = librosa.feature.mfcc(waveform, sr = sr)
-
-                '''
-                for segment_th in range(num_segments):
-                    start_sample = num_samples_per_segment * segment_th
-                    finish_smaple = start_sample + num_samples_per_segment
+                # id2mfcc[f] = librosa.feature.mfcc(waveform, sr = sr)
+                for s in range(num_segments):
+                    start_sample = s * num_samples_per_segment
+                    finish_sample = start_sample + num_samples_per_segment
                     mfcc = librosa.feature.mfcc(
-                        waveform[start_sample:finish_smaple],
-                        sr = sr,
+                        signal[start_sample:finish_sample],
+                        sr = sr
 
                         # customize the form of MFCCs:
                         # n_fft = 2048,
-                        # n_mfcc = 13,
+                        # n_mfcc = 13, #
                         # hop_length = 512,
 
                     )
-                '''
+
+                    # TODO in the video, MFCCs are transposed
 
     return id2mfcc
 
