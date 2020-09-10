@@ -161,6 +161,7 @@ def plot_training_results(history):
 
     plt.show()
 
+'''
 # now read the data
 with open('data.json', 'r') as data:
     data_json = json.load(data)
@@ -271,3 +272,29 @@ with open('data.json', 'r') as data:
     )
 
     plot_training_results(history)
+'''
+
+# see the data - just think about if it is possible to train that.
+'''
+with open('data.json') as f:
+    data = json.load(f)
+    for i in data['mfcc']:
+        mfcc = np.array(
+            i
+        )
+        mfcc = np.reshape(
+            mfcc,
+            (
+                # remember that we store the transposed time series
+                mfcc.shape[2],
+                mfcc.shape[1]
+            )
+        )
+        print(mfcc.shape)
+        print("New record")
+
+        librosa.display.specshow(
+            mfcc
+        )
+        plt.show()
+'''
