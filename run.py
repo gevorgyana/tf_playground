@@ -146,45 +146,41 @@ with open('data.json', 'w') as out:
 # now read the data
 with open('data.json', 'r') as data:
     data_json = json.load(data)
-
+    def fill_one_hot(answer_index, total_classes):
+        one_hot = []
+        for i in range(total_classes):
+            if answer_index == i:
+                one_hot.append(1)
+            else:
+                one_hot.append(0)
+        return one_hot
+    current_code = 0
+    vis = []
+    label2code = {}
+    for k in data_json['label']:
+        # print(k)
+        if k in vis:
+            continue
+        else:
+            label2code[k] = current_code
+            current_code += 1
+            vis.append(k)
+    one_hots = []
+    for i in range(len(label2code.keys())):
+        # print(i)
+        for j in label2code.keys():
+            # print("{} {}".format(j, label2code[j]))
+            if label2code[j] == i:
+                one_hots.append(
+                    fill_one_hot(i, len(label2code.keys()))
+                )
     X = np.array(
         data_json['mfcc']
     )
-
-    print(X.shape)
-
     y = np.array(data_json['label'])
-
-    X = np.reshape(X, (X.shape[0],
-                       X.shape[2],
-                       X.shape[3]
-    ))
-
-    # print(type(targets))
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size = 0.3
-    )
-
-    model = keras.Sequential([
-        keras.layers.Flatten(input_shape=(X.shape[1], X.shape[2])),
-
-        keras.layers.Dense(512, activation = 'relu'),
-        keras.layers.Dense(256, activation = 'relu'),
-        keras.layers.Dense(50, activation = 'relu')
-
-    ])
-
-    optimizer = keras.optimizers.Adam(learning_rate = 0.0001)
-    model.compile(
-        optimizer = optimizer,
-        loss = 'sparse_categorical_crossentropy',
-        metrics = ['accuracy']
-    )
-
-    model.summary()
-
-    history = model.fit(
-        X_train, y_train, validation_data = (X_test, y_test),
-        batch_size = 32, epochs = 50
-    )
+    # convert to one-hots
+    y = np.array(list(map(
+        lambda x: one_hots[label2code[x]],
+        y
+    )))
+    print(y)
