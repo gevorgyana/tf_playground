@@ -194,15 +194,20 @@ with open('data.json', 'r') as data:
         )
     )
 
-    print(X.shape)
-    print(y.shape)
-    print(y)
+    '''
+    y = np.reshape(y,
+        (
+            y.shape[0]
+            ,
+            y.shape[1],
+            1
+        )
+    )
+    '''
 
     # Split the data into test and train sets
     X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                         test_size = 0.3)
-
-    print('after the split')
     print(X_train.shape)
     print(y_train.shape)
     print(X_test.shape)
@@ -227,12 +232,25 @@ with open('data.json', 'r') as data:
     optimizer = keras.optimizers.Adam(learning_rate = 0.0001)
 
     model.compile(optimizer,
-                  loss = 'sparse_categorical_crossentropy',
+                  # ATTENTION: Not sparse! In the tutorial, they use
+                  # sparse, because they don't do one-hot encoding!
+                  loss = 'categorical_crossentropy',
                   metrics = ['accuracy']
     )
+
+    print(X_train)
+    print(X_test)
+    print(y_train)
+    print(y_test)
 
     model.fit(
         X_train, y_train, validation_data = (X_test, y_test),
         epochs = 50,
-        batch_size = 32
+
+        # !!!!!!! BATHCH SIZE IS IMPORTANT
+        # previously, the value of 32 causes an error, because batch was
+        # greater than 10 - the dimensionality (first index) of my toy
+        # dataset. OTOH, in the tutorial, they did not have any probelm
+        # because their dataset was already huge.
+        batch_size = 1
     )
