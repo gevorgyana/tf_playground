@@ -161,10 +161,68 @@ def plot_training_results(history):
 
     plt.show()
 
-'''
+# rescale MFCCs into 0-1 range
+def rescaled_mfcc():
+
+    with open('data.json') as f:
+
+        frames = []
+
+        data = json.load(f)
+        # max and min values from the whole range
+        min_ = np.min(data['mfcc'])
+        max_ = np.max(data['mfcc'])
+        rescaled_mfcc = data['mfcc']
+
+        '''
+        print("Small check")
+        print(len(rescaled_mfcc))
+        print(len(rescaled_mfcc[0]))
+        print(len(rescaled_mfcc[0][0]))
+        print(len(rescaled_mfcc[0][0][0]))
+        '''
+
+        for i in rescaled_mfcc:
+            i = np.array(i)
+            i = np.reshape(
+                i,
+                (i.shape[1],
+                 i.shape[2]
+                )
+            )
+            proper_shape = i.shape
+            i = np.reshape(
+                i,
+                np.prod(i.shape)
+            )
+            i = np.array([(item - min_) / (max_ - min_) for item in i])
+            i = np.reshape(
+                i,
+                proper_shape
+            )
+            frames.append(
+                [
+                    i.tolist()
+                ]
+            )
+
+        '''
+        print("Big check")
+        print(len(frames))
+        print(len(frames[0]))
+        print(len(frames[0][0]))
+        print(len(frames[0][0][0]))
+        '''
+
+        return frames
+
 # now read the data
 with open('data.json', 'r') as data:
     data_json = json.load(data)
+
+    # rescale the data
+    data_json['mfcc'] = rescaled_mfcc()
+
     def fill_one_hot(answer_index, total_classes):
         one_hot = []
         for i in range(total_classes):
@@ -272,7 +330,6 @@ with open('data.json', 'r') as data:
     )
 
     plot_training_results(history)
-'''
 
 # see the data - just think about if it is possible to train that.
 '''
@@ -324,6 +381,7 @@ examine(first)
 examine(second)
 '''
 
+'''
 # rescale data
 with open('data.json') as f:
     data = json.load(f)
@@ -371,3 +429,4 @@ with open('data.json') as f:
     print(
         np.min(rescaled_mfcc)
     )
+'''
