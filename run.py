@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+RUN = False
+EXPLORE = True
+
 import librosa, librosa.display
 import math
 import os
@@ -216,8 +219,40 @@ def rescaled_mfcc():
 
         return frames
 
+# trying to come up with new more informative features
+first = 'kaggle_ds/audio/audio/1-100032-A-0.wav'
+second = 'kaggle_ds/audio/audio/1-100038-A-14.wav'
+
+def examine(filename):
+    sound, sr = librosa.load(filename, SAMPLE_RATE)
+    assert sr == SAMPLE_RATE
+
+    os.system('aplay {}'.format(filename))
+
+    mfcc = librosa.feature.mfcc(
+        sound, sr
+    )
+
+    librosa.display.specshow(
+        mfcc
+    )
+
+    plt.show()
+
+if EXPLORE == True:
+    examine(first)
+    examine(second)
+
+class should_not_run(Exception):
+    pass
+
 # now read the data
 with open('data.json', 'r') as data:
+
+    # skip, if not wanted
+    if not RUN:
+        raise should_not_run
+
     data_json = json.load(data)
 
     # rescale the data
@@ -401,103 +436,3 @@ with open('data.json', 'r') as data:
     )
 
     plot_training_results(history)
-
-# see the data - just think about if it is possible to train that.
-'''
-with open('data.json') as f:
-    data = json.load(f)
-    for i in data['mfcc']:
-        mfcc = np.array(
-            i
-        )
-        mfcc = np.reshape(
-            mfcc,
-            (
-                # remember that we store the transposed time series
-                mfcc.shape[2],
-                mfcc.shape[1]
-            )
-        )
-        print(mfcc.shape)
-        print("New record")
-
-        librosa.display.specshow(
-            mfcc
-        )
-        plt.show()
-'''
-
-# trying to come up with new more informative features
-'''
-first = 'kaggle_ds/audio/audio/1-100032-A-0.wav'
-second = 'kaggle_ds/audio/audio/1-100038-A-14.wav'
-
-def examine(filename):
-    sound, sr = librosa.load(filename, SAMPLE_RATE)
-    assert sr == SAMPLE_RATE
-
-    os.system('aplay {}'.format(filename))
-
-    mfcc = librosa.feature.mfcc(
-        sound, sr
-    )
-
-    librosa.display.specshow(
-        mfcc
-    )
-
-    plt.show()
-
-examine(first)
-examine(second)
-'''
-
-'''
-# rescale data
-with open('data.json') as f:
-    data = json.load(f)
-    # max and min values from the whole range
-    min_ = np.min(data['mfcc'])
-    max_ = np.max(data['mfcc'])
-
-    rescaled_mfcc = data['mfcc']
-    for i in rescaled_mfcc:
-        i = np.array(i)
-
-        i = np.reshape(
-            i,
-            (i.shape[2],
-             i.shape[1]
-            )
-        )
-
-        proper_shape = i.shape
-
-        i = np.reshape(
-            i,
-            np.prod(i.shape)
-        )
-
-
-
-        i = np.array([(item - min_) / (max_ - min_) for item in i])
-        for j in i:
-            print(j)
-
-        i = np.reshape(
-            i,
-            proper_shape
-        )
-
-        print(i.shape)
-        print("-----")
-
-    # max and min values from the whole range
-    print(
-        np.max(rescaled_mfcc)
-    )
-
-    print(
-        np.min(rescaled_mfcc)
-    )
-'''
