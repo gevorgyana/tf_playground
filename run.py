@@ -279,26 +279,97 @@ with open('data.json', 'r') as data:
     print(X_test.shape)
     print(y_test.shape)
 
+    # preparing for conv net
+    X_train = np.reshape(
+        X_train,
+        (
+            X_train.shape[0],
+            X_train.shape[1],
+            X_train.shape[2],
+            1
+        )
+    )
+
+    X_test = np.reshape(
+        X_test,
+        (
+            X_test.shape[0],
+            X_test.shape[1],
+            X_test.shape[2],
+            1
+        )
+    )
+
     model = keras.Sequential([
 
-        # input with LSTM
-        keras.layers.LSTM(
-            64,
-            input_shape = (X.shape[1], X.shape[2]),
-            return_sequences = True
+        keras.layers.Conv2D(
+            32,
+            kernel_size = (3, 1),
+            activation = 'linear',
+            padding = 'same',
+            input_shape = (X.shape[1], X.shape[2], 1)
         ),
 
-        # 1 more LSTM, as in the video
-        keras.layers.LSTM(64),
+        keras.layers.LeakyReLU(
+            alpha = 0.1
+        ),
 
-        # dense layer
-        keras.layers.Dense(64, activation = 'relu'),
-        keras.layers.Dropout(0.3),
+        keras.layers.MaxPooling2D(
+            pool_size = (2, 1),
+            padding = 'same'
+        ),
 
-        # output
-        keras.layers.Dense(len(vis),
-                           activation = 'softmax'
+        # copy paste
+        keras.layers.Conv2D(
+            64,
+            kernel_size = (3, 3),
+            activation = 'linear',
+            padding = 'same'
+        ),
+
+        keras.layers.LeakyReLU(
+            alpha = 0.1
+        ),
+
+        keras.layers.MaxPooling2D(
+            pool_size = (2, 2),
+            padding = 'same'
+        ),
+
+        # copy paste
+
+        keras.layers.Conv2D(
+            128,
+            kernel_size = (3, 3),
+            activation = 'linear',
+            padding = 'same'
+        ),
+
+        keras.layers.LeakyReLU(
+            alpha = 0.1
+        ),
+
+        keras.layers.MaxPooling2D(
+            pool_size = (2, 2),
+            padding = 'same'
+        ),
+
+        keras.layers.Flatten(),
+
+        keras.layers.Dense(
+            128,
+            activation = 'linear'
+        ),
+
+        keras.layers.LeakyReLU(
+            alpha = 0.1
+        ),
+
+        keras.layers.Dense(
+            len(vis),
+            activation = 'softmax'
         )
+
     ])
 
     model.summary()
