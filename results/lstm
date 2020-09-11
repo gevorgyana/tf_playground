@@ -1,0 +1,21 @@
+    model = keras.Sequential([
+
+        # input with LSTM
+        keras.layers.LSTM(
+            64,
+            input_shape = (X.shape[1], X.shape[2]),
+            return_sequences = True
+        ),
+
+        # 1 more LSTM, as in the video
+        keras.layers.LSTM(64),
+
+        # dense layer
+        keras.layers.Dense(64, activation = 'relu'),
+        keras.layers.Dropout(0.3),
+
+        # output
+        keras.layers.Dense(len(vis),
+                           activation = 'softmax'
+        )
+    ])

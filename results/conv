@@ -1,0 +1,70 @@
+    model = keras.Sequential([
+
+        keras.layers.Conv2D(
+            32,
+            kernel_size = (3, 1),
+            activation = 'linear',
+            padding = 'same',
+            input_shape = (X.shape[1], X.shape[2], 1)
+        ),
+
+        keras.layers.LeakyReLU(
+            alpha = 0.1
+        ),
+
+        keras.layers.MaxPooling2D(
+            pool_size = (2, 1),
+            padding = 'same'
+        ),
+
+        # copy paste
+        keras.layers.Conv2D(
+            64,
+            kernel_size = (3, 3),
+            activation = 'linear',
+            padding = 'same'
+        ),
+
+        keras.layers.LeakyReLU(
+            alpha = 0.1
+        ),
+
+        keras.layers.MaxPooling2D(
+            pool_size = (2, 2),
+            padding = 'same'
+        ),
+
+        # copy paste
+
+        keras.layers.Conv2D(
+            128,
+            kernel_size = (3, 3),
+            activation = 'linear',
+            padding = 'same'
+        ),
+
+        keras.layers.LeakyReLU(
+            alpha = 0.1
+        ),
+
+        keras.layers.MaxPooling2D(
+            pool_size = (2, 2),
+            padding = 'same'
+        ),
+
+        keras.layers.Flatten(),
+
+        keras.layers.Dense(
+            128,
+            activation = 'linear'
+        ),
+
+        keras.layers.LeakyReLU(
+            alpha = 0.1
+        ),
+
+        keras.layers.Dense(
+            len(vis),
+            activation = 'softmax'
+        )
+    ])

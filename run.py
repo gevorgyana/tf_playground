@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-RUN = False
-EXPLORE = True
+RUN = True
+EXPLORE = False
 
 import librosa, librosa.display
 import math
@@ -315,6 +315,7 @@ with open('data.json', 'r') as data:
     print(y_test.shape)
 
     # preparing for conv net
+    '''
     X_train = np.reshape(
         X_train,
         (
@@ -334,77 +335,28 @@ with open('data.json', 'r') as data:
             1
         )
     )
+    '''
 
     model = keras.Sequential([
 
-        keras.layers.Conv2D(
-            32,
-            kernel_size = (3, 1),
-            activation = 'linear',
-            padding = 'same',
-            input_shape = (X.shape[1], X.shape[2], 1)
-        ),
-
-        keras.layers.LeakyReLU(
-            alpha = 0.1
-        ),
-
-        keras.layers.MaxPooling2D(
-            pool_size = (2, 1),
-            padding = 'same'
-        ),
-
-        # copy paste
-        keras.layers.Conv2D(
+        # input with LSTM
+        keras.layers.LSTM(
             64,
-            kernel_size = (3, 3),
-            activation = 'linear',
-            padding = 'same'
+            input_shape = (X.shape[1], X.shape[2]),
+            return_sequences = True
         ),
 
-        keras.layers.LeakyReLU(
-            alpha = 0.1
-        ),
+        # 1 more LSTM, as in the video
+        keras.layers.LSTM(64),
 
-        keras.layers.MaxPooling2D(
-            pool_size = (2, 2),
-            padding = 'same'
-        ),
+        # dense layer
+        keras.layers.Dense(64, activation = 'relu'),
+        keras.layers.Dropout(0.3),
 
-        # copy paste
-
-        keras.layers.Conv2D(
-            128,
-            kernel_size = (3, 3),
-            activation = 'linear',
-            padding = 'same'
-        ),
-
-        keras.layers.LeakyReLU(
-            alpha = 0.1
-        ),
-
-        keras.layers.MaxPooling2D(
-            pool_size = (2, 2),
-            padding = 'same'
-        ),
-
-        keras.layers.Flatten(),
-
-        keras.layers.Dense(
-            128,
-            activation = 'linear'
-        ),
-
-        keras.layers.LeakyReLU(
-            alpha = 0.1
-        ),
-
-        keras.layers.Dense(
-            len(vis),
-            activation = 'softmax'
+        # output
+        keras.layers.Dense(len(vis),
+                           activation = 'softmax'
         )
-
     ])
 
     model.summary()
